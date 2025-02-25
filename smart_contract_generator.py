@@ -4,17 +4,15 @@
 # In[6]:
 
 
+from transformers import pipeline
+
 def generate_solidity_code(scenario, contract_type):
     """
-    Generate Solidity code based on the given scenario and contract type.
-
-    Args:
-        scenario (str): Natural language description of the contract.
-        contract_type (str): Predefined or custom contract type.
-
-    Returns:
-        str: Generated Solidity code.
+    Uses Hugging Face's NLP model to generate Solidity smart contracts.
     """
+    generator = pipeline("text-generation", model="mistralai/Mistral-7B-Instruct-v0.1")
+
+    # Predefined contract templates
     if contract_type == "ERC20 Token":
         return """
         // SPDX-License-Identifier: MIT
@@ -38,6 +36,7 @@ def generate_solidity_code(scenario, contract_type):
             }
         }
         """
+
     elif contract_type == "Voting System":
         return """
         // SPDX-License-Identifier: MIT
@@ -63,18 +62,20 @@ def generate_solidity_code(scenario, contract_type):
             }
         }
         """
+
     else:
-        # Use NLP to customize the contract generation
-        # Placeholder example
+        # Use NLP model for custom contracts
+        response = generator(f"Generate a Solidity smart contract for: {scenario}", max_length=200, do_sample=True)
         return f"""
         // SPDX-License-Identifier: MIT
         pragma solidity ^0.8.0;
 
         // Auto-generated based on scenario: {scenario}
         contract CustomContract {{
-            // Add your custom logic here
+            {response[0]["generated_text"]}
         }}
         """
+
 
 
 # In[ ]:
